@@ -115,9 +115,12 @@ class LayerShotBase(LayerBase):
                     ]
                 except KeyError:
                     atba = []
-                main = self._ships[spid]["components"][scomp["artillery"]][
-                    "ammo_list"
+                try:
+                    main = self._ships[spid]["components"][scomp["artillery"]][
+                        "ammo_list"
                 ]
+                except KeyError:
+                    main = []
                 is_secondary = params_id in atba
                 is_secondary = params_id not in main
 
@@ -137,25 +140,50 @@ class LayerShotBase(LayerBase):
                     color = SHELL_COLORS[shell_type]
 
                 if is_secondary:
+                    color = "lime"
                     if isinstance(color, str):
                         color = ImageColor.getrgb(color)
 
                     color = list(color)
 
                     if len(color) == 3:
-                        color.append(85)
+                        color.append(255)
                     elif len(color) == 4:
-                        color[3] = 85
+                        color[3] = 255
                     else:
                         raise ValueError("Not a valid color")
 
                     color = tuple(color)
+                    
+                    shorten_amount = 0  
 
+                    d_x = px - cx
+                    d_y = py - cy
+                    line_length = ((d_x ** 2) + (d_y ** 2)) ** 0.5
+
+                    if line_length > shorten_amount:
+                        ratio = (line_length - shorten_amount) / line_length
+                        shortened_d_x = d_x * ratio
+                        shortened_d_y = d_y * ratio
+
+                        cx = cx + shortened_d_x
+                        cy = cy + shortened_d_y
+                        px = px - shortened_d_x
+                        py = py - shortened_d_y
+                else:
+                    color = list(color)
+                    if len(color) == 3:
+                        color.append(60)
+                    elif len(color) == 4:
+                        color[3] = 60
+                    else:
+                        raise ValueError("Not a valid color")
+                    color = tuple(color)
                 draw.line(
                     [(cx, cy), (px, py)],
                     fill=color,
                     width=2,
-                )
+                    )
             except KeyError:
                 pass
 

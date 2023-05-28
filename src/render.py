@@ -2,7 +2,8 @@ from pathlib import Path
 from renderer.render import Renderer
 from replay_parser import ReplayParser
 from renderer.utils import LOGGER
-
+    # Replace the argument parsing with a hardcoded file path
+    #replay_file = "C:/Users/Alex/Downloads/replay.wowsreplay"
 
 if __name__ == "__main__":
     import argparse
